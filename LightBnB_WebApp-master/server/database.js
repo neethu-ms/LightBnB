@@ -15,7 +15,7 @@ const users = require('./json/users.json');
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithEmail = function (email) {
+const getUserWithEmail = function(email) {
   return pool.query(`SELECT * FROM users where email = $1`, [email]).then((user) => {
     console.log(user.rows[0]);
     if (user.rows.length === 0) {
@@ -32,7 +32,7 @@ exports.getUserWithEmail = getUserWithEmail;
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function (id) {
+const getUserWithId = function(id) {
   //return Promise.resolve(users[id]);
   return pool.query(`SELECT * FROM users where id = $1`, [id]).then((user) => {
 
@@ -51,7 +51,7 @@ exports.getUserWithId = getUserWithId;
  * @param {{name: string, password: string, email: string}} user
  * @return {Promise<{}>} A promise to the user.
  */
-const addUser = function (user) {
+const addUser = function(user) {
   return pool.query(`INSERT INTO users(name, email,password) values($1,$2,$3) returning *`, [user.name, user.email, user.password]).then(user => user.rows);
 };
 exports.addUser = addUser;
@@ -63,7 +63,7 @@ exports.addUser = addUser;
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function (guest_id, limit = 10) {
+const getAllReservations = function(guest_id, limit = 10) {
   return pool.query(`SELECT properties.*, reservations.*, AVG(property_reviews.rating) AS average_rating 
 FROM reservations JOIN properties ON reservations.property_id = properties.id 
 JOIN property_reviews ON property_reviews.property_id = properties.id 
@@ -83,7 +83,7 @@ exports.getAllReservations = getAllReservations;
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = function (options, limit = 10) {
+const getAllProperties = function(options, limit = 10) {
   /* return pool.query(
     `SELECT * FROM properties LIMIT $1`,[limit]).then(res => res.rows)
     .catch(err => console.error('query error', err.stack)); */
@@ -162,10 +162,14 @@ exports.getAllProperties = getAllProperties;
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function (property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+const addProperty = function(property) {
+ 
+
+  return pool.query(`INSERT INTO properties(owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code,
+  country, parking_spaces, number_of_bathrooms, number_of_bedrooms) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) returning *`,  [property.owner_id,
+    property.title, property.description,property.thumbnail_photo_url, property.cover_photo_url,property.cost_per_night,property.street, property.city,
+  property.province, property.post_code, property.country, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms]).then(propertyValue => propertyValue.rows);
 };
 exports.addProperty = addProperty;
+
+
