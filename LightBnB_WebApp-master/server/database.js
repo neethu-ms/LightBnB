@@ -115,10 +115,10 @@ const getAllProperties = function(options, limit = 10) {
   if (options.owner_id) {
     if (queryParams.length > 0) {
       queryParams.push(Number(options.owner_id));
-      queryString += ` AND owner_id LIKE $${queryParams.length}`;
+      queryString += ` AND owner_id = $${queryParams.length}`;
     } else {
       queryParams.push(Number(options.owner_id));
-      queryString += `WHERE owner_id LIKE $${queryParams.length}`;
+      queryString += `WHERE owner_id = $${queryParams.length}`;
     }
   }
   // 4
@@ -152,10 +152,9 @@ exports.getAllProperties = getAllProperties;
  */
 const addProperty = function(property) {
  
-
   return db.query(`INSERT INTO properties(owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, street, city, province, post_code,
   country, parking_spaces, number_of_bathrooms, number_of_bedrooms) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) returning *`,  [property.owner_id,
-    property.title, property.description,property.thumbnail_photo_url, property.cover_photo_url,property.cost_per_night,property.street, property.city,
-  property.province, property.post_code, property.country, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms]).then(propertyValue => propertyValue.rows);
+    property.title, property.description,property.thumbnail_photo_url, property.cover_photo_url,Number(property.cost_per_night),property.street, property.city,
+  property.province, property.post_code, property.country, Number(property.parking_spaces), Number(property.number_of_bathrooms), Number(property.number_of_bedrooms)]).then(propertyValue => propertyValue.rows);
 };
 exports.addProperty = addProperty;
